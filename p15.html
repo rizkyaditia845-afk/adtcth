@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Game Memelihara Ikan</title>
+  <h1>selamat datang di website pertama saya</h1>
+  <keygen> aditminanga
+  <style>
+    body {
+      background: #a0e9ff;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      margin: 0;
+      font-family: Arial, sans-serif;
+      flex-direction: column;
+    }
+    #aquarium {
+      position: relative;
+      width: 400px;
+      height: 300px;
+      background: #005f99;
+      border: 5px solid #004466;
+      border-radius: 15px;
+      overflow: hidden;
+      margin-top: 20px;
+    }
+    #fish {
+      position: absolute;
+      width: 80px;
+      top: 120px;
+      left: 0;
+      transition: left 0.5s linear;
+    }
+    button, input {
+      margin-top: 10px;
+      padding: 10px 20px;
+      font-size: 16px;
+      border-radius: 8px;
+      border: none;
+    }
+    button {
+      background: #008CBA;
+      color: white;
+      cursor: pointer;
+    }
+    button:hover {
+      background: #005f75;
+    }
+  </style>
+</head>
+<body>
+
+<h2>Game Memelihara Ikan</h2>
+<input type="text" id="namaIkan" placeholder="Masukkan nama ikan" />
+<button onclick="mulaiGame()">Mulai</button>
+<div id="aquarium" style="display:none;">
+[4/8 2.53 PM] ChatGPT: <p id="namaLabel" style="color:white; text-align:center; margin:5px;"></p>
+  <img id="fish" src="https://i.ibb.co/Nxj2mLv/fish.png" alt="Ikan" />
+</div>
+<button onclick="beriMakan()" style="display:none;" id="makanBtn">Beri Makan</button>
+
+<script>
+  const fish = document.getElementById('fish');
+  const aquarium = document.getElementById('aquarium');
+  const makanBtn = document.getElementById('makanBtn');
+  const namaInput = document.getElementById('namaIkan');
+  const namaLabel = document.getElementById('namaLabel');
+  let pos = 0;
+  let direction = 1;
+
+  function mulaiGame() {
+    const nama = namaInput.value.trim();
+    if (nama === '') {
+      alert('Masukkan nama ikan dulu!');
+      return;
+    }
+    namaLabel.innerText = 'Ikan: ' + nama;
+    aquarium.style.display = 'block';
+    makanBtn.style.display = 'inline-block';
+    namaInput.style.display = 'none';
+    event.target.style.display = 'none';
+  }
+
+  function bergerak() {
+    pos += 10 * direction;
+    if (pos > 320) direction = -1;
+    else if (pos < 0) direction = 1;
+    fish.style.left = pos + 'px';
+    fish.style.transform = direction === 1 ? 'scaleX(1)' : 'scaleX(-1)';
+  }
+
+  function beriMakan() {
+    alert('Ikan senang diberi makan!');
+    for (let i = 0; i < 5; i++) {
+[4/8 2.53 PM] ChatGPT: setTimeout(() => bergerak(), i * 300);
+    }
+  }
+
+  setInterval(bergerak, 500);
+</script>
+
+</body>
+</html>
