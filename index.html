@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<!DOCTYPE html><!DOCTYPE html>
 <html lang="id">
 <head>
   <meta charset="UTF-8"/>
@@ -92,4 +92,99 @@
   </script>
 </body>
 </html>
+
+<html lang="id">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Game Catur Lengkap</title>
+  <script src="https://cdn.jsdelivr.net/npm/chess.js@1.0.0/dist/chess.min.js"></script>
+  <style>
+    body { display:flex; flex-direction:column; align-items:center; font-family:Arial;}
+    #board { display:grid; grid-template: repeat(8,60px)/repeat(8,60px); margin:20px;}
+    .cell { width:60px; height:60px; display:flex; align-items:center; justify-content:center;
+            font-size:36px; cursor:pointer; box-sizing:border-box; }
+    .white { background:#eee; } .black { background:#444; color:#fff; }
+    .highlight { background: yellow !important; }
+    #status { margin-top:10px; font-size:18px; }
+    button { margin-top:10px; padding:8px 16px; }
+  </style>
+</head>
+<body>
+  <div id="board"></div>
+  <div id="status"></div>
+  <button id="resetBtn">Reset Game</button>
+
+  <script>
+    const boardEl = document.getElementById('board');
+    const statusEl = document.getElementById('status');
+    const chess = new Chess();
+    let squareEls = {};
+    let selected = null;
+    
+    const pieceSymbols = {
+      p:'♟', r:'♜', n:'♞', b:'♝', q:'♛', k:'♚',
+      P:'♙', R:'♖', N:'♘', B:'♗', Q:'♕', K:'♔'
+    };
+
+    function renderBoard() {
+      boardEl.innerHTML = '';
+      squareEls = {};
+      const board = chess.board();
+      for (let r=0; r<8; r++) {
+        for (let c=0; c<8; c++) {
+          const sq = board[r][c];
+          const cell = document.createElement('div');
+          const color = (r + c) % 2 === 0 ? 'white' : 'black';
+          cell.className = `cell ${color}`;
+          const sqName = 'abcdefgh'[c] + (8 - r);
+          cell.dataset.square = sqName;
+          if (sq) cell.textContent = pieceSymbols[sq.color === 'b' ? sq.type : sq.type.toUpperCase()];
+          cell.addEventListener('click', onClickSquare);
+          boardEl.appendChild(cell);
+          squareEls[sqName] = cell;
+        }
+      }
+      updateStatus();
+    }
+
+    function onClickSquare(e) {
+      const sq = e.target.dataset.square;
+      clearHighlights();
+      if (selected) {
+        const move = chess.move({ from: selected, to: sq, promotion: 'q' });
+        selected = null;
+        renderBoard();
+        return;
+      }
+      const moves = chess.moves({ square: sq, verbose: true });
+      if (moves.length) {
+        selected = sq;
+        moves.forEach(m => squareEls[m.to].classList.add('highlight'));
+      }
+    }
+
+    function clearHighlights() {
+      Object.values(squareEls).forEach(cell => cell.classList.remove('highlight'));
+    }
+
+    function updateStatus() {
+      if (chess.in_checkmate()) {
+        statusEl.textContent = `Checkmate! ${chess.turn() === 'w' ? 'Black' : 'White'} menang.`;
+      } else if (chess.in_draw() || chess.in_stalemate()) {
+        statusEl.textContent = "Game Draw / Stalemate!";
+      } else if (chess.in_check()) {
+        statusEl.textContent = `Skak! Giliran pemain: ${chess.turn() === 'w' ? 'White' : 'Black'}`;
+      } else {
+        statusEl.textContent = `Giliran pemain: ${chess.turn() === 'w' ? 'White' : 'Black'}`;
+      }
+    }
+
+    document.getElementById('resetBtn').onclick = () => { chess.reset(); selected = null; renderBoard(); };
+
+    renderBoard();
+  </script>
+</body>
+</html>
+
 
