@@ -1,82 +1,95 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Game Memelihara Ikan</title>
-<h1>selamat datang di website pertama saya</h1>
-<style>
-  body {
-    background: #a0e9ff;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 100vh;
-    margin: 0;
-    font-family: Arial, sans-serif;
-    flex-direction: column;
-  }
-  #aquarium {
-    position: relative;
-    width: 400px;
-    height: 300px;
-    background: #005f99;
-    border: 5px solid #004466;
-    border-radius: 15px;
-    overflow: hidden;
-  }
-  #fish {
-    position: absolute;
-    width: 80px;
-    top: 120px;
-    left: 0;
-    transition: left 0.5s linear;
-  }
-  button {
-    margin-top: 20px;
-    padding: 10px 20px;
-    background: #008CBA;
-    border: none;
-    color: (255, 255, 255);
-    border-radius: 8px;
-    cursor: pointer;
-  }
-  button:hover {
-    background: #150075;
-  }
-</style>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Game Catur Lengkap</title>
+  <script src="https://cdn.jsdelivr.net/npm/chess.js@1.0.0/dist/chess.min.js"></script>
+  <style>
+    body { display:flex; flex-direction:column; align-items:center; font-family:Arial;}
+    #board { display:grid; grid-template: repeat(8,60px)/repeat(8,60px); margin:20px;}
+    .cell { width:60px; height:60px; display:flex; align-items:center; justify-content:center;
+            font-size:36px; cursor:pointer; box-sizing:border-box; }
+    .white { background:#eee; } .black { background:#444; color:#fff; }
+    .highlight { background: yellow !important; }
+    #status { margin-top:10px; font-size:18px; }
+    button { margin-top:10px; padding:8px 16px; }
+  </style>
 </head>
 <body>
-<a href="https://adtcth.com">klik di sini</a>
-<h2>Game Memelihara Ikan</h2>
-<div id="aquarium">
-  <img id="fish" src="https:ibb.co/Nxj2mLv/fish.png"alt="ikan" />
-</div>
-<button onclick="beriMakan()">Beri Makan</button>
+  <div id="board"></div>
+  <div id="status"></div>
+  <button id="resetBtn">Reset Game</button>
 
-<script>
-  const fish = document.getElementById('fish');
-  let pos = 0;
-  let direction = 1;
+  <script>
+    const boardEl = document.getElementById('board');
+    const statusEl = document.getElementById('status');
+    const chess = new Chess();
+    let squareEls = {};
+    let selected = null;
+    
+    const pieceSymbols = {
+      p:'♟', r:'♜', n:'♞', b:'♝', q:'♛', k:'♚',
+      P:'♙', R:'♖', N:'♘', B:'♗', Q:'♕', K:'♔'
+    };
 
-  function bergerak() {
-    pos += 10 * direction;
-    if(pos > 320) direction = -1;
-     else if(pos < 0) direction = 1;
-    fish.style.left = pos + 'px';
-    fish.style.transform = direction === 1 ? 'scaleX(1)' : 'scaleX(-1)';
-  }
-
-  function beriMakan() {
-    alert('Ikan senang diberi makan!');
-    for(let i=0; i<5; i++) {
-      setTimeout(() => bergerak(), i * 300);
+    function renderBoard() {
+      boardEl.innerHTML = '';
+      squareEls = {};
+      const board = chess.board();
+      for (let r=0; r<8; r++) {
+        for (let c=0; c<8; c++) {
+          const sq = board[r][c];
+          const cell = document.createElement('div');
+          const color = (r + c) % 2 === 0 ? 'white' : 'black';
+          cell.className = `cell ${color}`;
+          const sqName = 'abcdefgh'[c] + (8 - r);
+          cell.dataset.square = sqName;
+          if (sq) cell.textContent = pieceSymbols[sq.color === 'b' ? sq.type : sq.type.toUpperCase()];
+          cell.addEventListener('click', onClickSquare);
+          boardEl.appendChild(cell);
+          squareEls[sqName] = cell;
+        }
+      }
+      updateStatus();
     }
-  }
 
-  setInterval(bergerak, 500);
-</script>
+    function onClickSquare(e) {
+      const sq = e.target.dataset.square;
+      clearHighlights();
+      if (selected) {
+        const move = chess.move({ from: selected, to: sq, promotion: 'q' });
+        selected = null;
+        renderBoard();
+        return;
+      }
+      const moves = chess.moves({ square: sq, verbose: true });
+      if (moves.length) {
+        selected = sq;
+        moves.forEach(m => squareEls[m.to].classList.add('highlight'));
+      }
+    }
 
+    function clearHighlights() {
+      Object.values(squareEls).forEach(cell => cell.classList.remove('highlight'));
+    }
+
+    function updateStatus() {
+      if (chess.in_checkmate()) {
+        statusEl.textContent = `Checkmate! ${chess.turn() === 'w' ? 'Black' : 'White'} menang.`;
+      } else if (chess.in_draw() || chess.in_stalemate()) {
+        statusEl.textContent = "Game Draw / Stalemate!";
+      } else if (chess.in_check()) {
+        statusEl.textContent = `Skak! Giliran pemain: ${chess.turn() === 'w' ? 'White' : 'Black'}`;
+      } else {
+        statusEl.textContent = `Giliran pemain: ${chess.turn() === 'w' ? 'White' : 'Black'}`;
+      }
+    }
+
+    document.getElementById('resetBtn').onclick = () => { chess.reset(); selected = null; renderBoard(); };
+
+    renderBoard();
+  </script>
 </body>
 </html>
 
