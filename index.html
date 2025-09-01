@@ -1,104 +1,94 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="id">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Game Catur Sederhana</title>
-<h2>selamat datang di website pertama saya</h2>
-<style>
-  body { display: flex; justify-content: center; padding: 20px; background: #eee; }
-  #chessboard { display: grid; grid-template-columns: repeat(8, 60px); grid-template-rows: repeat(8, 60px); border: 2px solid #333; }
-  .square {
-    width: 60px; height: 60px;
-    display: flex; justify-content: center; align-items: center;
-    font-size: 36px; cursor: pointer;
-    user-select: none;
-  }
-  .light { background: #f0d9b5; }
-  .dark { background: #b58863; }
-  .selected { outline: 3px solid #00f; }
-</style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Contoh Halaman dengan Link</title>
+    <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-<div id="chessboard"></div>
+    <header>
+        <h1>Selamat Datang di Halaman Saya!</h1>
+        <nav>
+            <ul>
+                <li><a href="#bagian1">Ke Bagian 1</a></li>
+                <li><a href="#bagian2">Ke Bagian 2</a></li>
+                <li><a href="https://www.example.com" target="_blank">Kunjungi Example.com</a></li>
+                <li><a href="mailto:email@example.com">Kirim Email</a></li>
+            </ul>
+        </nav>
+    </header>
 
-<script>
-  const pieces = {
-    'r': '♜', 'n': '♞', 'b': '♝', 'q': '♛', 'k': '♚', 'p': '♟',
-    'R': '♖', 'N': '♘', 'B': '♗', 'Q': '♕', 'K': '♔', 'P': '♙'
-  };
+    <main>
+        <section id="bagian1">
+            <h2>Bagian 1</h2>
+            <p>Ini adalah konten dari Bagian 1 dimana ini merupakan contoh dari web pertama saya.</p>
+        </section>
 
-  let board = [
-    ['r','n','b','q','k','b','n','r'],
-    ['p','p','p','p','p','p','p','p'],
-    ['','','','','','','',''],
-    ['','','','','','','',''],
-    ['','','','','','','',''],
-    ['','','','','','','',''],
-    ['P','P','P','P','P','P','P','P'],
-    ['R','N','B','Q','K','B','N','R']
-  ];
+        <section id="bagian2">
+            <h2>Bagian 2</h2>
+            <p>Ini adalah konten dari Bagian 2 juga ini merupakan contoh dari web pertama saya.</p>
+        </section>
+    </main>
 
-  let selected = null;
-  const boardDiv = document.getElementById('chessboard');
- function renderBoard() {
-    boardDiv.innerHTML = '';
-    for(let r=0; r<8; r++) {
-      for(let c=0; c<8; c++) {
-        let square = document.createElement('div');
-        square.className = 'square ' + ((r+c) % 2 === 0 ? 'light' : 'dark');
-        square.dataset.row = r;
-        square.dataset.col = c;
-        square.textContent = pieces[board[r][c]] || '';
-        if(selected && selected[0] === r && selected[1] === c) {
-          square.classList.add('selected');
-        }
-        square.addEventListener('click', onSquareClick);
-        boardDiv.appendChild(square);
-      }
-    }
-  }
+    <footer>
+        <p>&copy; 2023 Contoh Halaman. Semua hak dilindungi.</p>
+    </footer>
+<head>
+<body>
+  <style>
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f0f0f0;
+    margin: 0;
+    padding: 0;
+}
 
-  function onSquareClick(e) {
-    const r = parseInt(e.currentTarget.dataset.row);
-    const c = parseInt(e.currentTarget.dataset.col);
+header {
+    background-color: #007BFF;
+    color: white;
+    padding: 20px;
+    text-align: center;
+}
 
-    if(selected) {
-      if((board[r][c] === '' || isOpponent(selected, [r,c])) && isMoveValid(selected, [r,c])) {
-        board[r][c] = board[selected[0]][selected[1]];
-        board[selected[0]][selected[1]] = '';
-        selected = null;
-        renderBoard();
-      } else {
-        if(board[r][c] !== '') {
-          selected = [r,c];
-          renderBoard();
-        } else {
-          selected = null;
-          renderBoard();
-        }
-      }
-    } else {
-      if(board[r][c] !== '') {
-        selected = [r,c];
-        renderBoard();
-      }
-    }
-  }
-function isOpponent(from, to) {
-    let pieceFrom = board[from[0]][from[1]];
-    let pieceTo = board[to[0]][to[1]];
-    if(pieceTo === '') return false;
-    return (pieceFrom.toUpperCase() === pieceFrom) !== (pieceTo.toUpperCase() === pieceTo);
-  }
+nav ul {
+    list-style-type: none;
+    padding: 0;
+}
 
-  function isMoveValid(from, to) {
-    let dr = Math.abs(from[0] - to[0]);
-    let dc = Math.abs(from[1] - to[1]);
-    return (dr <= 1 && dc <= 1);
-  }
+nav ul li {
+    display: inline;
+    margin: 0 15px;
+}
 
-  renderBoard();
-</script>
-</body>
-</html>
+nav ul li a {
+    color: white;
+    text-decoration: none;
+}
+
+nav ul li a:hover {
+    text-decoration: underline;
+}
+
+main {
+    padding: 20px;
+}
+
+section {
+    margin: 20px 0;
+    padding: 20px;
+    background-color: white;
+    border-radius: 5px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+footer {
+    text-align: center;
+    padding: 10px;
+    background-color: #007BFF;
+    color: white;
+    position: relative;
+    bottom: 0;
+    width: 10%;
+}
+
