@@ -1,610 +1,127 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="id">
 
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Snake - Nokia Style (Single File)</title>
-  <style>
-    :root {
-      --bg: #0b1a2b;
-      --panel: #071126;
-      --accent: #0004d2;
-      --muted: #9fb3c8;
-      --danger: #ff4d4f;
-      --gold: #ffd166;
-    }
-
-    * {
-      box-sizing: border-box;
-      font-family: Inter, Segoe UI, Helvetica, Arial, sans-serif
-    }
-
-    body {
-      margin: 0;
-      min-height: 100vh;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      background: linear-gradient(180deg, var(--bg), #031025 80%);
-      color: var(--muted);
-      padding: 20px;
-    }
-
-    .wrap {
-      width: 100%;
-      max-width: 960px;
-      display: grid;
-      grid-template-columns: 1fr 320px;
-      gap: 18px;
-      align-items: start;
-    }
-
-    .card {
-      background: linear-gradient(180deg, rgba(255, 255, 255, 0.02), rgba(255, 255, 255, 0.01));
-      border-radius: 14px;
-      padding: 14px;
-      box-shadow: 0 6px 20px rgba(0, 0, 0, 0.5);
-      border: 1px solid rgba(255, 255, 255, 0.03);
-    }
-
-    .game {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 10px;
-      padding: 16px;
-    }
-
-    canvas {
-      background: linear-gradient(180deg, #071a2a 0%, #01121b 100%);
-      border-radius: 8px;
-      width: 100%;
-      max-width: 640px;
-      height: auto;
-      image-rendering: crisp-edges;
-      image-rendering: pixelated;
-      box-shadow: 0 8px 30px rgba(0, 0, 0, 0.6), inset 0 2px 6px rgba(255, 255, 255, 0.02);
-    }
-
-    .hud {
-      width: 100%;
-      display: flex;
-      justify-content: space-between;
-      gap: 10px;
-      align-items: center;
-    }
-
-    .stats {
-      display: flex;
-      gap: 10px;
-      align-items: center;
-      color: var(--muted);
-      font-size: 14px;
-    }
-
-    .score {
-      background: rgba(0, 0, 0, 0.25);
-      padding: 8px 12px;
-      border-radius: 999px;
-      border: 1px solid rgba(255, 255, 255, 0.03);
-      color: var(--accent);
-      font-weight: 700;
-      letter-spacing: 0.6px;
-    }
-
-    .controls {
-      display: flex;
-      gap: 8px;
-      align-items: center;
-    }
-
-    button {
-      background: rgba(255, 255, 255, 0.03);
-      border: 1px solid rgba(255, 255, 255, 0.05);
-      color: var(--muted);
-      padding: 8px 12px;
-      border-radius: 10px;
-      cursor: pointer;
-      font-weight: 600;
-    }
-
-    button.primary {
-      background: linear-gradient(90deg, var(--accent), #00b86b);
-      color: #012218;
-      border: 0;
-    }
-
-    .side {
-      display: flex;
-      flex-direction: column;
-      gap: 14px;
-    }
-
-    .info {
-      font-size: 14px;
-      line-height: 1.4;
-      color: var(--muted);
-    }
-
-    .controls-mobile {
-      display: none;
-      gap: 6px;
-      justify-content: center;
-      align-items: center;
-    }
-
-    .dpad {
-      display: grid;
-      grid-template-columns: repeat(3, 56px);
-      grid-template-rows: repeat(3, 56px);
-      gap: 6px;
-    }
-
-    .dpad button {
-      width: 56px;
-      height: 56px;
-      border-radius: 10px;
-      padding: 0;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-weight: 700;
-    }
-
-    .hidden {
-      display: none !important;
-    }
-
-    @media (max-width:880px) {
-      .wrap {
-        grid-template-columns: 1fr;
-        max-width: 420px
-      }
-
-      .controls-mobile {
-        display: flex
-      }
-
-      .side {
-        order: 2
-      }
-
-      .game {
-        order: 1
-      }
-    }
-
-    .legend {
-      display: flex;
-      gap: 10px;
-      align-items: center;
-      font-size: 13px;
-      color: var(--muted);
-    }
-
-    .legend .dot {
-      width: 14px;
-      height: 14px;
-      border-radius: 4px;
-      display: inline-block;
-      border: 2px solid rgba(255, 255, 255, 0.03);
-    }
-
-    .dot.snake {
-      background: var(--accent)
-    }
-
-    .dot.fruit {
-      background: #ff4b5c
-    }
-
-    .dot.gold {
-      background: var(--gold)
-    }
-
-    .small {
-      font-size: 13px;
-      color: #9fb3c8
-    }
-
-    .center {
-      text-align: center;
-    }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
 </head>
 
 <body>
-  <div class="wrap">
-    <div class="card game">
-      <div class="hud" style="width:100%;max-width:720px;">
-        <div class="stats">
-          <div class="score" id="score">Score: 0</div>
-          <div class="small">Level: <span id="level">1</span></div>
-          <div class="small">Speed: <span id="speedLabel">Normal</span></div>
-        </div>
-        <div class="controls">
-          <button id="btnPause">Pause</button>
-          <button id="btnRestart" class="primary">Restart</button>
-        </div>
-      </div>
+    <nav>
+        <ul>
+            <li><a href="">ini project website kedua saya saya</a></li>
+        </ul>
+    </nav>
+    <section>
+        <h2> tentang diri Saya</h2>
+        <p>Nama lengkap: Rizki Aditya </p>
+        <p>TTL:oku timur 25/01/2008</p>
+        <p>umur:17</p>
+        <p>Alamat: desa menanga Tengah</p>
+        <p>Agama:islam</p>
+        <p>Pendidikan: sma/sederajat</p>
+        <p>Hobi:coding</p>
+        <p>cita-cita: web dev</p>
+    </section>
 
-      <!-- Canvas game -->
-      <canvas id="game" width="480" height="480"></canvas>
+    <h1>ini adalah poto Saya</h1>
 
-      <!-- kontrol hp -->
-      <div class="controls-mobile">
-        <div class="dpad" aria-hidden="false">
-          <div></div>
-          <button data-dir="up">↑</button>
-          <div></div>
-
-          <button data-dir="left">←</button>
-          <div></div>
-          <button data-dir="right">→</button>
-
-          <div></div>
-          <button data-dir="down">↓</button>
-          <div></div>
-        </div>
-      </div>
-
-      <div style="width:100%;max-width:720px;display:flex;justify-content:center;margin-top:6px;">
-        <div class="legend">
-          <span class="dot snake"></span> Ular
-          <span class="dot fruit" style="margin-left:10px"></span> Buah (+1)
-          <span class="dot gold" style="margin-left:10px"></span> Buah Emas (+3)
-        </div>
-      </div>
-
-      <div style="width:100%;
-      max-width:720px;
-      margin-top:10px;
-      text-align:center;
-      color:var(--muted);
-      font-size:13px">
-        Kontrol: Panah / WASD (desktop) • Tombol arah (mobile)
-      </div>
+    <div>
+        <img src="c:\Users\acer\Desktop\photos video\20251026_070537.jpg" alt="">
     </div>
+    <h3> halo, Saya biasa dipanggil adit</h3>
+    <p>saya sedang mengembangkan diri dibidang it(informasi teknologi). fokus saya adalah penegmbangan di bidang front
+        end</p>
+    <p>nanti setelah mendalami di bidang front end saya juga akan mendalami dibidang back end </p>
+    <p>dan saya akan berkomitmen untuk terus belajar dan memebrikan solusi terbaik dalam setiap proyek</p>
 
-    <script>
-      (function () {
-        // Canvas & rendering setup
-        const canvas = document.getElementById('game');
-        const ctx = canvas.getContext('2d', { alpha: false });
-
-        // Grid size: use a square grid for classic pixel look
-        const GRID = 24; // number of cells per row/col
-        const CELL = Math.floor(canvas.width / GRID); // pixels per cell
-        const W = GRID, H = GRID;
-
-        // Game state
-        let snake = [{ x: Math.floor(W / 2), y: Math.floor(H / 2) }];
-        let dir = { x: 1, y: 0 }; // moving right initially
-        let nextDir = dir;
-        let fruit = null;
-        let golden = null;
-        let score = 0;
-        let level = 1;
-        let speed = 8; // frames per second (base)
-        let running = true;
-        let gameOver = false;
-        let loopTimer = null;
-        let frames = 0;
-
-        // UI
-        const scoreEl = document.getElementById('score');
-        const levelEl = document.getElementById('level');
-        const speedLabel = document.getElementById('speedLabel');
-        const btnPause = document.getElementById('btnPause');
-        const btnRestart = document.getElementById('btnRestart');
-
-        // Helper: random free cell not occupied by snake
-        function randFreeCell() {
-          const occupied = new Set(snake.map(s => s.x + ',' + s.y));
-          let tries = 0;
-          while (tries < 1000) {
-            const x = Math.floor(Math.random() * W);
-            const y = Math.floor(Math.random() * H);
-            if (!occupied.has(x + ',' + y)) return { x, y };
-            tries++;
-          }
-          // fallback
-          for (let y = 0; y < H; y++) for (let x = 0; x < W; x++) {
-            if (!occupied.has(x + ',' + y)) return { x, y };
-          }
-          return { x: 0, y: 0 };
-        }
-
-        // Spawn initial fruit
-        function spawnFruit() {
-          fruit = randFreeCell();
-          // randomly sometimes spawn golden instead? we'll spawn golden separately
-        }
-
-        // Spawn golden fruit with timeout
-        function spawnGolden() {
-          golden = randFreeCell();
-          // golden lasts for e.g. 8 seconds
-          setTimeout(() => { golden = null; }, 8000);
-        }
-
-        // Reset game
-        function reset() {
-          snake = [{ x: Math.floor(W / 2), y: Math.floor(H / 2) }];
-          dir = { x: 1, y: 0 };
-          nextDir = dir;
-          score = 0;
-          level = 1;
-          speed = 8;
-          running = true;
-          gameOver = false;
-          fruit = null;
-          golden = null;
-          spawnFruit();
-          updateUI();
-          startLoop();
-        }
-
-        // Update UI labels
-        function updateUI() {
-          scoreEl.textContent = 'Score: ' + score;
-          levelEl.textContent = level;
-          speedLabel.textContent = speedLabelText();
-        }
-        function speedLabelText() {
-          if (speed <= 6) return 'Slow';
-          if (speed <= 10) return 'Normal';
-          if (speed <= 14) return 'Fast';
-          return 'Very Fast';
-        }
-
-        // Game loop: use setInterval based on speed (fps)
-        function startLoop() {
-          if (loopTimer) clearInterval(loopTimer);
-          loopTimer = setInterval(gameTick, Math.floor(1000 / speed));
-        }
-        function stopLoop() { if (loopTimer) clearInterval(loopTimer); loopTimer = null; }
-
-        // Main tick: move snake, check collisions, draw
-        function gameTick() {
-          if (!running || gameOver) return;
-          frames++;
-
-          // update direction
-          dir = nextDir;
-
-          // new head
-          const head = { x: (snake[0].x + dir.x + W) % W, y: (snake[0].y + dir.y + H) % H };
-
-          // check collision with self
-          if (snake.some(s => s.x === head.x && s.y === head.y)) {
-            // game over
-            gameOver = true;
-            running = false;
-            stopLoop();
-            draw(); // final frame
-            showGameOver();
-            return;
-          }
-
-          // add head
-          snake.unshift(head);
-
-          // eat fruit?
-          let ate = false;
-          if (fruit && head.x === fruit.x && head.y === fruit.y) {
-            score += 1; ate = true;
-            fruit = null;
-            spawnFruit();
-          }
-          // eat golden?
-          if (golden && head.x === golden.x && head.y === golden.y) {
-            score += 3; ate = true;
-            golden = null;
-          }
-
-          if (!ate) {
-            // remove tail
-            snake.pop();
-          } else {
-            // when ate, maybe increase speed slightly
-            // For every 3 points, small speed bump
-            const newSpeed = 8 + Math.floor(score / 3);
-            if (newSpeed !== speed) {
-              speed = Math.min(20, newSpeed);
-              startLoop(); // restart interval with new speed
-            }
-          }
-
-          // spawn golden occasionally after thresholds
-          if (score > 0 && score % 5 === 0 && !golden && frames % 10 === 0) {
-            // slight chance to spawn once per moment
-            if (Math.random() < 0.5) spawnGolden();
-          }
-
-          // cap level by score
-          level = 1 + Math.floor(score / 10);
-
-          updateUI();
-          draw();
-        }
-
-        // Draw everything
-        function draw() {
-          // clear
-          ctx.fillStyle = '#02101a';
-          ctx.fillRect(0, 0, canvas.width, canvas.height);
-
-          // draw grid (subtle)
-          ctx.strokeStyle = 'rgba(255,255,255,0.02)';
-          ctx.lineWidth = 1;
-          for (let i = 0; i <= W; i++) {
-            const x = i * CELL;
-            ctx.beginPath(); ctx.moveTo(x + 0.5, 0); ctx.lineTo(x + 0.5, canvas.height); ctx.stroke();
-          }
-          for (let j = 0; j <= H; j++) {
-            const y = j * CELL;
-            ctx.beginPath(); ctx.moveTo(0, y + 0.5); ctx.lineTo(canvas.width, y + 0.5); ctx.stroke();
-          }
-
-          // draw fruit
-          if (fruit) {
-            drawCell(fruit.x, fruit.y, '#ff4b5c', true);
-          }
-          // draw golden
-          if (golden) {
-            drawCell(golden.x, golden.y, '#ffd166', true);
-          }
-
-          // draw snake
-          for (let i = snake.length - 1; i >= 0; i--) {
-            const seg = snake[i];
-            const shade = i === 0 ? '#00ff86' : '#00d26a';
-            drawCell(seg.x, seg.y, shade, false, i === 0);
-          }
-
-          // if game over overlay
-          if (gameOver) {
-            ctx.fillStyle = 'rgba(0,0,0,0.6)';
-            ctx.fillRect(0, 0, canvas.width, canvas.height);
-            ctx.fillStyle = '#fff';
-            ctx.font = '32px sans-serif';
-            ctx.textAlign = 'center';
-            ctx.fillText('GAME OVER', canvas.width / 2, canvas.height / 2 - 10);
-            ctx.font = '16px sans-serif';
-            ctx.fillText('Score: ' + score + ' • Tekan Restart', canvas.width / 2, canvas.height / 2 + 22);
-          }
-          // paused overlay
-          if (!running && !gameOver) {
-            ctx.fillStyle = 'rgba(0,0,0,0.25)';
-            ctx.fillRect(0, 0, canvas.width, canvas.height);
-            ctx.fillStyle = '#fff';
-            ctx.font = '20px sans-serif';
-            ctx.textAlign = 'center';
-            ctx.fillText('PAUSED', canvas.width / 2, canvas.height / 2);
-          }
-        }
-
-        // helper to draw a cell with padding to make tile look nicer
-        function drawCell(cx, cy, color, withGlow = false, head = false) {
-          const x = cx * CELL;
-          const y = cy * CELL;
-          const pad = Math.max(2, Math.floor(CELL * 0.12));
-          const size = CELL - pad * 2;
-          if (withGlow) {
-            // glow effect behind fruit
-            ctx.fillStyle = color;
-            ctx.fillRect(x + pad - 2, y + pad - 2, size + 4, size + 4);
-            ctx.globalAlpha = 0.95;
-          }
-          // main rect
-          ctx.fillStyle = color;
-          roundRect(ctx, x + pad, y + pad, size, size, 6);
-          // head highlight
-          if (head) {
-            ctx.fillStyle = 'rgba(255,255,255,0.12)';
-            roundRect(ctx, x + pad + Math.floor(size * 0.1), y + pad + Math.floor(size * 0.08), Math.floor(size * 0.28), Math.floor(size * 0.28), 4);
-          }
-          ctx.globalAlpha = 1;
-        }
-
-        // rounded rectangle helper
-        function roundRect(ctx, x, y, w, h, r) {
-          ctx.beginPath();
-          ctx.moveTo(x + r, y);
-          ctx.arcTo(x + w, y, x + w, y + h, r);
-          ctx.arcTo(x + w, y + h, x, y + h, r);
-          ctx.arcTo(x, y + h, x, y, r);
-          ctx.arcTo(x, y, x + w, y, r);
-          ctx.closePath();
-          ctx.fill();
-        }
-
-        // key controls
-        window.addEventListener('keydown', (e) => {
-          const k = e.key.toLowerCase();
-          if (k === 'arrowup' || k === 'w') tryChangeDir(0, -1);
-          if (k === 'arrowdown' || k === 's') tryChangeDir(0, 1);
-          if (k === 'arrowleft' || k === 'a') tryChangeDir(-1, 0);
-          if (k === 'arrowright' || k === 'd') tryChangeDir(1, 0);
-          if (k === ' ' || k === 'p') togglePause();
-          if (k === 'r') restart();
-        });
-
-        // mobile dpad
-        document.querySelectorAll('.dpad button').forEach(b => {
-          b.addEventListener('touchstart', (ev) => { ev.preventDefault(); const dir = b.dataset.dir; handleDirKey(dir); });
-          b.addEventListener('mousedown', () => handleDirKey(b.dataset.dir));
-        });
-        function handleDirKey(dirName) {
-          if (dirName === 'up') tryChangeDir(0, -1);
-          if (dirName === 'down') tryChangeDir(0, 1);
-          if (dirName === 'left') tryChangeDir(-1, 0);
-          if (dirName === 'right') tryChangeDir(1, 0);
-        }
-
-        // prevent 180 degree direct reverse
-        function tryChangeDir(nx, ny) {
-          if (gameOver) return;
-          // disallow reverse
-          if (nx === -dir.x && ny === -dir.y) return;
-          nextDir = { x: nx, y: ny };
-          // if paused, resume on move
-          if (!running && !gameOver) {
-            running = true;
-          }
-        }
-
-        // pause / restart buttons
-        function togglePause() {
-          if (gameOver) return;
-          running = !running;
-          btnPause.textContent = running ? 'Pause' : 'Resume';
-          updateUI();
-        }
-        btnPause.addEventListener('click', togglePause);
-        btnRestart.addEventListener('click', restart);
-
-        function restart() {
-          stopLoop();
-          reset();
-          btnPause.textContent = 'Pause';
-        }
-
-        function showGameOver() {
-          btnPause.textContent = 'Pause';
-          // small animation or sound could be added here
-        }
-
-        // initialize
-        spawnFruit();
-        updateUI();
-        startLoop();
-        draw();
-
-        // Start with responsive resize logic to preserve crisp pixel grid
-        function fitCanvas() {
-          // ensure canvas displayed as square and fits container
-          const rect = canvas.getBoundingClientRect();
-          // maintain original resolution but scale via CSS (we already set width:100% in CSS)
-          // no action needed unless high-DPI scaling wanted
-        }
-        window.addEventListener('resize', fitCanvas);
-
-        // Prevent swipe scrolling interfering on mobile dpad
-        document.querySelectorAll('.dpad button').forEach(btn => {
-          btn.addEventListener('touchmove', (e) => e.preventDefault(), { passive: false });
-        });
-
-        // Expose some globals for debugging if desired (dev)
-        window._snakeGame = {
-          getState: () => ({ score, snakeLength: snake.length, speed, fruit, golden }),
-          restart
-        };
-
-      })();
-    </script>
+    <footer>
+        <p>2026 hak cipta dang ss kuti</p>
+    </footer>
 </body>
+<style>
+    body {
+        font-family: Arial, Helvetica, sans-serif;
+        background-color: aqua;
+        padding: 0px;
+        margin: 0px;
+    }
 
-</html>
+    h1 {
+        color: palevioletred;
+        display: flex;
+        justify-content: center;
+    }
+
+    h2 {
+        color: green;
+        display: flex;
+        justify-content: center;
+    }
+
+    h3 {
+        color: palevioletred;
+        display: flex;
+        justify-content: center;
+    }
+
+    p {
+        color: blue;
+        display: flex;
+        justify-content: center;
+        margin: 0;
+        padding: 0;
+        left: 0;
+    }
+
+    body {
+        margin: 10%;
+        min-height: 30px;
+        font-size: medium;
+    }
+
+
+    img {
+        width: 200px;
+        height: auto;
+        margin-bottom: 15px;
+    }
+
+    footer {
+        text-align: center;
+        padding: 20px;
+        background-color: #0400ff71;
+        color: white;
+        position: relative;
+        bottom: 0;
+        width: 10%;
+    }
+
+    section {
+        background-color: rgba(55, 0, 255, 0.37);
+        color: blue;
+        padding: 20px;
+        text-align: center;
+        margin: auto;
+        padding: 20px;
+    }
+
+    nav ul {
+        list-style-type: none;
+        padding: 0;
+    }
+
+    nav ul li a {
+        color: palevioletred;
+        text-decoration: none;
+        width: 200px;
+    }
+
+    nav ul li a:hover {
+        text-decoration: underline;
+    }
+
+    div {
+        text-align: center;
+    }
